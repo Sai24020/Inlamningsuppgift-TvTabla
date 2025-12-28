@@ -209,3 +209,41 @@ Jag bytte till att använda `type="module"` och importera `createApp` direkt fr�
 - Förslag testades och verifierades stegvis med små commits för att kunna backa vid behov.  
 - Kritisk granskning av AI-förslag var nödvändig för tillgänglighet och korrekt semantik.  
 - Resultatet är en komplett Vue 3-app med korrekt A11y, inga externa bundlers och enkel integration med befintlig HTML/CSS/JS.
+
+-------------------------------------------------------------------------------------------------
+# Vue Devtools – Problem och lösning
+
+## Prompt / fråga
+
+> När jag öppnar min Vue 3-app i webbläsaren ser jag meddelandet i konsolen:
+>
+> ```
+> Vue.js is detected on this page.
+> Devtools inspection is not available because it's in production mode or explicitly disabled by the author.
+> ```
+>
+> Vad betyder detta och hur kan jag lösa det för att använda Vue Devtools?
+
+---
+
+## Förklaring
+
+1. **Vad meddelandet betyder**  
+   - Vue finns på sidan och körs korrekt. ✅  
+   - Din app använder **produktionsversionen** av Vue (`vue.global.prod.js` eller `vue.esm-browser.prod.js`).  
+   - Produktionsversionen är optimerad och innehåller **ingen utvecklingsinformation**, därför fungerar inte Vue Devtools inspektion.
+
+2. **Varför det händer**  
+   - Production build är minifierad och har inga debug-namn på komponenter.  
+   - Devtools kan inte läsa interna komponenter, props eller state.
+
+---
+
+## Lösningar
+
+### 1. Byt till utvecklingsversion av Vue (CDN)
+
+Ersätt produktions-CDN-länken med utvecklingsversionen:
+
+```html
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
