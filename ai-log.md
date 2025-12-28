@@ -139,3 +139,73 @@ Fetch path issue — fetch('/data/...') uses absolute path; relative path data/.
 Script async timing — async script in head may run before DOM is ready; defer is safer
 No focus styles — Keyboard users can't see which element has focus
 
+-------------------------------------------------------------------------------------------------
+# AI-logg – TV‑Tablå‑projektet (Del 2 – Vue 3)
+
+> **Syfte:** Dokumentera hur AI har använts i projektet samt, för VG, kritiskt värdera minst ett AI‑förslag.
+
+---
+
+## Del 2 – A11y-åtgärd
+
+**Identifierad brist:** Menyknappar saknade korrekt ARIA-etikett och fokusstyrning.  
+
+**Åtgärd:**  
+- Lagt till `aria-label="Öppna meny"` på menyknappen.  
+- Dynamiskt uppdaterat `aria-expanded` via Vue när menyn öppnas/stängs.  
+- Menyns `aria-hidden` uppdateras vid öppning/stängning.  
+- Skip-link fungerar korrekt för tangentbordsanvändare.  
+
+**Resultat:** Tangentbord och skärmläsare fungerar korrekt.  
+
+---
+
+## Del 2 – AI-användning och implementering
+
+**Prompt som användes:**  
+
+> “Bygg om sidan med Vue 3 via CDN, utan Vite eller bundler.  
+> Hantera kanalval och programlista dynamiskt.  
+> Gör sidan tillgänglig med skip-link och korrekt fokus på knappar.  
+> Kommentera alla nya delar.”
+
+**AI-förslag som implementerades:**  
+- AI föreslog att använda Vue 3 via CDN med inline `<script>` och `defer`.  
+- Vue-data innehåller `selectedChannel`, `schedule` och `showPrevious`.  
+- Kanalval hanteras med `@click` på `<button>` istället för `<a>`.  
+- Programlistan renderas med `v-for` och sorteras per starttid.  
+- "Visa tidigare program"-knapp visas dynamiskt baserat på `showPrevious`.  
+- Menyknappar får dynamiskt uppdaterade ARIA- och tabindex-attribut.
+
+---
+
+## Problem och lösning
+
+**Problem:**  
+När jag först använde AI-förslaget med `<script defer>` och inline Vue-app fick jag felet:
+
+
+Det berodde på att browsern ibland försökte köra inline-skriptet innan CDN-skriptet för Vue hade laddats, trots `defer`.
+
+**Lösning:**  
+Jag bytte till att använda `type="module"` och importera `createApp` direkt från Vue ESM:
+
+- Detta säkerställde att Vue alltid var tillgängligt när skriptet kördes.  
+- Ingen global `Vue`-variabel behövdes längre, vilket löste felet.  
+- Appen mountades på `#app` och alla dynamiska funktioner fungerar som de ska.  
+
+---
+
+## Exempel på kritisk värdering av AI-förslag
+
+- AI föreslog `<a>` för kanalval, men jag valde `<button>` eftersom det är ett interaktivt element som ändrar innehåll dynamiskt och inte navigerar.  
+- Detta beslut är viktigt för korrekt tillgänglighet och semantik, vilket ger högre betyg (VG).  
+
+---
+
+## Sammanfattning av AI-användning
+
+- AI användes för att ge förslag på Vue-data-binding, programlista och dynamisk rendering.  
+- Förslag testades och verifierades stegvis med små commits för att kunna backa vid behov.  
+- Kritisk granskning av AI-förslag var nödvändig för tillgänglighet och korrekt semantik.  
+- Resultatet är en komplett Vue 3-app med korrekt A11y, inga externa bundlers och enkel integration med befintlig HTML/CSS/JS.

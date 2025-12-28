@@ -14,14 +14,11 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
       rel="stylesheet"
     />
-
     <link href="style.css" rel="stylesheet" />
-
     <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap"
@@ -32,55 +29,128 @@
   </head>
 
   <body>
-    <!-- Skip link (tangentbordstillgänglighet) -->
-    <a href="#main-content" class="skip-link">Hoppa till innehåll</a>
+    <!-- NYTT ROOT-ELEMENT FÖR VUE -->
+    <div id="app">
+      <!-- Skip-link för tangentbordsanvändare -->
+      <a href="#main-content" class="skip-link">Hoppa till innehåll</a>
 
-    <!-- HEADER + NAV -->
-    <header>
-      <!-- Menyknapp (ersätter div onclick) -->
-      <button
-        class="menu-icon"
-        id="menu-toggle"
-        aria-label="Öppna meny"
-        aria-expanded="false"
-        onclick="toggleMenu()"
-      >
-        <i class="fas fa-bars"></i>
-      </button>
+      <!-- HEADER + NAV -->
+      <header>
+        <!-- Menyknapp med Vue-eventbinding och ARIA -->
+        <button
+          class="menu-icon"
+          id="menu-toggle"
+          aria-label="Öppna meny"
+          aria-expanded="false"
+          @click="toggleMenu"
+        >
+          <i class="fas fa-bars"></i>
+        </button>
 
-      <!-- Navigation -->
-      <nav>
-        <ul class="menu" id="main-menu" aria-hidden="true">
-          <li><button tabindex="-1" onclick="setChannel('SVT 1')">SVT 1</button></li>
-          <li><button tabindex="-1" onclick="setChannel('SVT 2')">SVT 2</button></li>
-          <li><button tabindex="-1" onclick="setChannel('SVT Barn')">SVT Barn</button></li>
-          <li><button tabindex="-1" onclick="setChannel('Kunskapskanalen')">Kunskapskanalen</button></li>
-          <li><button tabindex="-1" onclick="setChannel('SVT 24')">SVT 24</button></li>
-        </ul>
-      </nav>
-    </header>
+        <!-- Navigation -->
+        <nav>
+          <ul class="menu" id="main-menu" aria-hidden="true">
+            <li v-for="channel in channels" :key="channel">
+              <button tabindex="-1" @click="setChannel(channel)">{{ channel }}</button>
+            </li>
+          </ul>
+        </nav>
+      </header>
 
-    <!-- MAIN CONTENT -->
-    <main id="main-content">
-      <div class="container">
-        <div class="row">
-          <div class="col-sm-6 offset-sm-2 container-js">
-            <h1 id="js-title">SVT</h1>
+      <!-- MAIN CONTENT -->
+      <main id="main-content">
+        <div class="container">
+          <div class="row">
+            <div class="col-sm-6 offset-sm-2 container-js">
+              <h1>{{ selectedChannel }}</h1>
 
-            <div id="js-schedule"></div>
+              <div id="js-schedule">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item show-previous" v-if="!showPrevious">
+                    <button @click="showPreviousPrograms">Visa tidigare program</button>
+                  </li>
 
-            <img
-              src="loading.gif"
-              id="js-loading"
-              class="loading-spinner hidden"
-              alt="Laddar TV-tablå"
-            />
+                  <li v-for="program in filteredSchedule" :key="program.start" class="list-group-item list-item-flex">
+                    <div class="time">{{ formatTime(program.start) }}</div>
+                    <div class="program-name">{{ program.name }}</div>
+                  </li>
+                </ul>
+              </div>
+
+              <img src="loading.gif" v-if="loading" class="loading-spinner" alt="Laddar TV-tablå" />
+            </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
 
-    <!-- JS -->
-    <script defer src="script.js"></script>
+    <!-- Vue-app script med ES-modul -->
+    <script type="module">
+      import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js';
+
+      createApp({
+        data() {
+          return {
+            channels: ["SVT 1", "SVT 2", "SVT Barn", "Kunskapskanalen", "SVT 24"],
+            selectedChannel: "SVT 1",
+            schedule: [],
+            showPrevious: false,
+            loading: true,
+            menuOpen: false,
+          };
+        },
+        computed: {
+          filteredSchedule() {
+            if (this.showPrevious) return this.schedule;
+            const now = new Date();
+            return this.schedule.filter(p => new Date(p.start) > now);
+          }
+        },
+        methods: {
+          loadData() {
+            this.loading = true;
+            fetch(`data/${this.selectedChannel}.json`)
+              .then(res => res.json())
+              .then(data => {
+                this.schedule = data.sort((a, b) => new Date(a.start) - new Date(b.start));
+                this.loading = false;
+              })
+              .catch(err => {
+                console.error(err);
+                this.loading = false;
+              });
+          },
+          setChannel(channel) {
+            this.selectedChannel = channel;
+            this.showPrevious = false;
+            this.toggleMenu();
+            this.loadData();
+          },
+          showPreviousPrograms() {
+            this.showPrevious = true;
+          },
+          formatTime(date) {
+            return new Date(date).toTimeString().slice(0, 5);
+          },
+          toggleMenu() {
+            const menu = document.getElementById("main-menu");
+            const toggle = document.getElementById("menu-toggle");
+            this.menuOpen = !this.menuOpen;
+            if (this.menuOpen) {
+              menu.classList.add("menu--show");
+              menu.setAttribute("aria-hidden", "false");
+              toggle.setAttribute("aria-expanded", "true");
+            } else {
+              menu.classList.remove("menu--show");
+              menu.setAttribute("aria-hidden", "true");
+              toggle.setAttribute("aria-expanded", "false");
+            }
+          }
+        },
+        mounted() {
+          this.loadData();
+        }
+      }).mount("#app");
+    </script>
   </body>
 </html>
