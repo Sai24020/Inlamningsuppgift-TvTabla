@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- <html> element must have a lang attribute -->
 <html lang="sv">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,12 +9,10 @@
       content="TV-tablå för SVT-kanaler. Se aktuella och kommande TV-program för SVT 1, SVT 2, Barnkanalen, Kunskapskanalen och SVT 24."
     />
 
-
+    <!-- CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
-      crossorigin="anonymous"
     />
 
     <link
@@ -31,46 +28,59 @@
       rel="stylesheet"
     />
 
-    <!-- Documents must have <title> element to aid in navigation -->
     <title>TV-tablå SVT</title>
   </head>
 
   <body>
-    <!-- Menu -->
-    <div class="menu-icon" onclick="toggleMenu()">
-      <i class="fas fa-bars"></i>
-    </div>
+    <!-- Skip link (tangentbordstillgänglighet) -->
+    <a href="#main-content" class="skip-link">Hoppa till innehåll</a>
 
-    <ul class="menu">
-      <li onclick="setChannel('SVT 1')">SVT 1</li>
-      <li onclick="setChannel('SVT 2')">SVT 2</li>
-      <li onclick="setChannel('SVT Barn')">SVT Barn</li>
-      <li onclick="setChannel('Kunskapskanalen')">Kunskapskanalen</li>
-      <li onclick="setChannel('SVT 24')">SVT 24</li>
-    </ul>
+    <!-- HEADER + NAV -->
+    <header>
+      <!-- Menyknapp (ersätter div onclick) -->
+      <button
+        class="menu-icon"
+        id="menu-toggle"
+        aria-label="Öppna meny"
+        aria-expanded="false"
+        onclick="toggleMenu()"
+      >
+        <i class="fas fa-bars"></i>
+      </button>
 
-    <!-- Page content -->
-    <div class="container">
-      <div class="row">
-        <div class="col-sm-6 offset-sm-2 container-js">
-          <!-- I DENNA H1 SKA VALD TV-KANALS NAMN SKRIVAS UT men behöver skriva SVT inte empty H1-->
-          <h1 id="js-title">SVT</h1>
+      <!-- Navigation -->
+      <nav>
+        <ul class="menu" id="main-menu" aria-hidden="true">
+          <li><button tabindex="-1" onclick="setChannel('SVT 1')">SVT 1</button></li>
+          <li><button tabindex="-1" onclick="setChannel('SVT 2')">SVT 2</button></li>
+          <li><button tabindex="-1" onclick="setChannel('SVT Barn')">SVT Barn</button></li>
+          <li><button tabindex="-1" onclick="setChannel('Kunskapskanalen')">Kunskapskanalen</button></li>
+          <li><button tabindex="-1" onclick="setChannel('SVT 24')">SVT 24</button></li>
+        </ul>
+      </nav>
+    </header>
 
-          <div id="js-schedule">
-            <!-- EXEMPEL-HTML SOM SKA SKAPAS MED JAVASCRIPT -->
+    <!-- MAIN CONTENT -->
+    <main id="main-content">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-6 offset-sm-2 container-js">
+            <h1 id="js-title">SVT</h1>
+
+            <div id="js-schedule"></div>
+
+            <img
+              src="loading.gif"
+              id="js-loading"
+              class="loading-spinner hidden"
+              alt="Laddar TV-tablå"
+            />
           </div>
-
-          <!-- DENNA VISAS BARA NÄR INGEN DATA LADDATS -->
-          <img
-            src="loading.gif"
-            id="js-loading"
-            class="loading-spinner hidden"
-            alt="Laddar TV-tablå"
-          />
         </div>
       </div>
-    </div>
+    </main>
+
+    <!-- JS -->
     <script defer src="script.js"></script>
   </body>
 </html>
-
