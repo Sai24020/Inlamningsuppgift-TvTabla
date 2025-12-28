@@ -24,6 +24,7 @@ Fetch path issue — fetch('/data/...') uses absolute path; relative path data/.
 Script async timing — async script in head may run before DOM is ready; defer is safer
 No focus styles — Keyboard users can't see which element has focus
 
+# Prompt3: add #codebase and fixa implementation checklist found in #file:ai-log.md and sen spara
 # HTML Accessibility & Structure Fixes for TV-Tablå Project
 
 ## Problem Summary
@@ -172,7 +173,7 @@ a:focus,
 
 ## Implementation Checklist
 
-- [ ] Update script tag: `async` → `defer`
+- [x] Update script tag: `async` → `defer`
 - [ ] Wrap menu in `<header>` and `<nav>`
 - [ ] Replace `<div class="menu-icon">` with semantic `<button>`
 - [ ] Wrap content in `<main id="main-content">`
