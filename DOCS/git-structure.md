@@ -41,4 +41,6 @@ Det rekommenderas att arbeta **iterativt med små commits** för att kunna visa 
 - Zip hela projektmappen inklusive `.git`-katalogen för inlämning:
 
 ```bash
-zip -r tv-tablå-projekt.zip tv-tablå-projekt/
+Compress-Archive -Path "C:\Users\Suzan\source\repos\Inlämningsuppgift-TvTablå\*" -DestinationPath "C:\Users\Suzan\source\repos\Inlämningsuppgift-TvTablå-Suzan.zip"
+
+ Compress-Archive -Path "C:\Users\Suzan\source\repos\Inlämningsuppgift-TvTablå\*" -DestinationPath "C:\Users\Suzan\source\repos\Inlämningsuppgift-TvTablå-Suzan-Del2-vue.zip"
